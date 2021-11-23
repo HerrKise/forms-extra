@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validator } from "../utils/validator";
 import TextField from "./textField";
 
 const Edit = () => {
+    const history = useNavigate();
     const [data, setData] = useState({
         name: "",
         surname: "",
@@ -12,23 +13,13 @@ const Edit = () => {
         expirience: "",
     });
     const [errors, setErrors] = useState({});
-    let user;
-    if (localStorage.getItem("data")) {
-        user = JSON.parse(localStorage.getItem("data"));
-    }
-    const handleChange = ({ target }) => {
-        let user;
+    useEffect(() => {
         if (localStorage.getItem("data")) {
-            user = JSON.parse(localStorage.getItem("data"));
-            const currentTargetName = Object.keys(user).filter(
-                (key) => target.name === key
-            );
-            console.log(user[currentTargetName], currentTargetName.toString());
-            setData((prevState) => ({
-                ...prevState,
-                [currentTargetName.toString()]: user[currentTargetName],
-            }));
+            setData(JSON.parse(localStorage.getItem("data")));
         }
+    }, []);
+
+    const handleChange = ({ target }) => {
         setData((prevState) => ({
             ...prevState,
             [target.name]: target.value,
@@ -86,8 +77,8 @@ const Edit = () => {
         else {
             localStorage.setItem("data", JSON.stringify(data));
             alert("Обновлено!");
+            history("/");
         }
-        document.location.href = "/";
     };
     return (
         <div className="container mt-5">
